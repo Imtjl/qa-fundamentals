@@ -1,5 +1,6 @@
 import { HyperRace } from './HyperRace';
 import fc from 'fast-check';
+import { HyperTeam } from './HyperTeam';
 
 describe('HyperRace unit tests (white box)', () => {
 	test('discussMeaningOfLife увеличивает уровень споров и снижает настроение', () => {
@@ -108,5 +109,51 @@ describe('HyperRace property-based tests', () => {
 				},
 			),
 		);
+	});
+});
+
+describe('Hyper Team', () => {
+	let team: HyperTeam;
+	let member: HyperRace;
+
+	beforeEach(() => {
+		team = new HyperTeam();
+		member = new HyperRace();
+	});
+
+	test('add those fucking members', () => {
+		expect(team.getSize()).toBe(0);
+		team.addMember(member);
+		expect(team.getSize()).toBe(1);
+	});
+
+	test('not more than 20 megamozgs', () => {
+		for (let i = 0; i < 20; i++) {
+			team.addMember(new HyperRace());
+		}
+		expect(() => team.addMember(new HyperRace())).toThrow(
+			'Нельзя добавить больше 20 участников в команду.',
+		);
+	});
+
+	test('removing works', () => {
+		team.addMember(member);
+		team.addMember(new HyperRace());
+		expect(team.getSize()).toBe(2);
+		team.removeMember(0);
+		expect(team.getSize()).toBe(1);
+		team.removeMember(0);
+		expect(team.getSize()).toBe(0);
+		expect(() => team.removeMember(0)).toThrow('Геноцид');
+	});
+
+	test('teamDiscuss rises sdiscuss, lowers mood', () => {
+		team.addMember(new HyperRace());
+		team.addMember(new HyperRace());
+		const beforeStatus = team.getTeamStatus();
+		team.teamDiscuss();
+		const afterStatus = team.getTeamStatus();
+		expect(afterStatus.avgDispute).toBeCloseTo(beforeStatus.avgDispute + 10, 5);
+		expect(afterStatus.avgMood).toBeCloseTo(beforeStatus.avgMood - 5, 5);
 	});
 });
