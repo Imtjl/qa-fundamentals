@@ -34,7 +34,7 @@ export class HyperRace {
 			throw new Error('Уровень споров слишком низкий, чтобы решать вопросы.');
 		}
 		this.issuesResolved = true;
-		this.disputeLevel = 0; // споры сбрасываются
+		this.disputeLevel = 0;
 	}
 
 	public resetDisputes(): void {
