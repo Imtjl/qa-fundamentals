@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Визуализация результатов интеграционного тестирования</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .plot-container {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+
+        .file-upload {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .file-name {
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .demo-button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .demo-button:hover {
+            background-color: #0b7dda;
+        }
+
+        .file-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .file-upload-item {
+            margin: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Визуализация результатов интеграционного тестирования</h1>
+
+    <div class="file-upload">
+        <h2>Загрузка CSV-файлов</h2>
+        <p>Выберите CSV-файлы для визуализации</p>
+
+        <div class="file-container">
+            <div class="file-upload-item">
+                <input type="file" id="trig-file" class="file-input" accept=".csv" />
+                <label for="trig-file" class="file-label">Выбрать файл тригонометрической части</label>
+                <div id="trig-file-name" class="file-name">Файл не выбран</div>
+            </div>
+
+            <div class="file-upload-item">
+                <input type="file" id="log-file" class="file-input" accept=".csv" />
+                <label for="log-file" class="file-label">Выбрать файл логарифмической части</label>
+                <div id="log-file-name" class="file-name">Файл не выбран</div>
+            </div>
+
+            <div class="file-upload-item">
+                <input type="file" id="transition-file" class="file-input" accept=".csv" />
+                <label for="transition-file" class="file-label">Выбрать файл области перехода</label>
+                <div id="transition-file-name" class="file-name">Файл не выбран</div>
+            </div>
+        </div>
+
+        <button class="demo-button" onclick="generateDemoPlots()">
+            Использовать демо-данные (если файлы недоступны)
+        </button>
+    </div>
+
+    <div class="legend">
+        <h3>Легенда:</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #1f77b4"></div>
+            <span>Реальная функция</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ff7f0e"></div>
+            <span>Функция-заглушка</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #2ca02c"></div>
+            <span>Разница между функциями</span>
+        </div>
+    </div>
+
+    <div class="plot-container">
+        <h2>Тригонометрическая часть (x ≤ 0)</h2>
+        <div id="trig-plot"></div>
+    </div>
+
+    <div class="plot-container">
+        <h2>Логарифмическая часть (x > 0)</h2>
+        <div id="log-plot"></div>
+    </div>
+
+    <div class="plot-container">
+        <h2>Область перехода между частями функции</h2>
+        <div id="transition-plot"></div>
+    </div>
+
+    <script>
+        // Настройка обработчиков выбора файлов
+        document
+            .getElementById('trig-file')
+            .addEventListener('change', function (e) {
+                const fileName = e.target.files[0]
+                    ? e.target.files[0].name
+                    : 'Файл не выбран';
+                document.getElementById('trig-file-name').textContent = fileName;
+
+                if (e.target.files[0]) {
+                    readCSV(e.target.files[0], function (data) {
+                        createPlot(data, 'trig-plot', 'Тригонометрическая часть (x ≤ 0)');
+                    });
+                }
+            });
+
+        document
+            .getElementById('log-file')
+            .addEventListener('change', function (e) {
+                const fileName = e.target.files[0]
+                    ? e.target.files[0].name
+                    : 'Файл не выбран';
+                document.getElementById('log-file-name').textContent = fileName;
+
+                if (e.target.files[0]) {
+                    readCSV(e.target.files[0], function (data) {
+                        createPlot(data, 'log-plot', 'Логарифмическая часть (x > 0)');
+                    });
+                }
+            });
+
+        document
+            .getElementById('transition-file')
+            .addEventListener('change', function (e) {
+                const fileName = e.target.files[0]
+                    ? e.target.files[0].name
+                    : 'Файл не выбран';
+                document.getElementById('transition-file-name').textContent =
+                    fileName;
+
+                if (e.target.files[0]) {
+                    readCSV(e.target.files[0], function (data) {
+                        createPlot(
+                            data,
+                            'transition-plot',
+                            'Область перехода между частями функции',
+                        );
+                    });
+                }
+            });
+
+        // Функция для чтения CSV через FileReader
+        function readCSV(file, callback) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const csvData = e.target.result;
+                const data = parseCSV(csvData);
+                callback(data);
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Функция для парсинга CSV
+        function parseCSV(csvText) {
+            const rows = csvText.split('\n');
+            const headers = rows[0].split(',');
+
+            const result = {
+                x: [],
+                real: [],
+                stub: [],
+                difference: [],
+            };
+
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i].trim() === '') continue;
+
+                const values = rows[i].split(',');
+                result.x.push(parseFloat(values[0]));
+
+                // Проверяем на NaN
+                const realValue = values[1] === 'NaN' ? null : parseFloat(values[1]);
+                const stubValue = values[2] === 'NaN' ? null : parseFloat(values[2]);
+                const diffValue = values[3] === 'NaN' ? null : parseFloat(values[3]);
+
+                result.real.push(realValue);
+                result.stub.push(stubValue);
+                result.difference.push(diffValue);
+            }
+
+            return result;
+        }
+
+        // Функция для создания графика
+        function createPlot(data, elementId, title) {
+            if (!data || !data.x || data.x.length === 0) {
+                document.getElementById(elementId).innerHTML =
+                    '<p style="color:red">Ошибка при обработке данных. Проверьте формат CSV-файла.</p>';
+                return;
+            }
+
+            const traces = [
+                {
+                    x: data.x,
+                    y: data.real,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Реальная функция',
+                    line: {color: '#1f77b4', width: 2},
+                },
+                {
+                    x: data.x,
+                    y: data.stub,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Функция-заглушка',
+                    line: {color: '#ff7f0e', width: 2},
+                },
+                {
+                    x: data.x,
+                    y: data.difference,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Разница',
+                    line: {color: '#2ca02c', width: 1.5, dash: 'dash'},
+                    yaxis: 'y2',
+                },
+            ];
+
+            const layout = {
+                title: title,
+                xaxis: {title: 'x'},
+                yaxis: {
+                    title: 'Значение функции',
+                    titlefont: {color: '#1f77b4'},
+                    tickfont: {color: '#1f77b4'},
+                },
+                yaxis2: {
+                    title: 'Разница',
+                    titlefont: {color: '#2ca02c'},
+                    tickfont: {color: '#2ca02c'},
+                    overlaying: 'y',
+                    side: 'right',
+                },
+                legend: {x: 0, y: 1},
+                hovermode: 'closest',
+                margin: {l: 60, r: 60, t: 50, b: 50},
+            };
+
+            Plotly.newPlot(elementId, traces, layout);
+        }
+
+        // Функция для генерации демо-данных
+        function generateDemoData(type) {
+            const result = {
+                x: [],
+                real: [],
+                stub: [],
+                difference: [],
+            };
+
+            let start, end, step;
+            let func;
+
+            switch (type) {
+                case 'trig':
+                    start = -1.5;
+                    end = -0.01;
+                    step = 0.02;
+                    func = (x) => 2 * Math.sin(x) - Math.cos(x);
+                    break;
+                case 'log':
+                    start = 0.01;
+                    end = 5;
+                    step = 0.05;
+                    func = (x) => Math.log(x) * Math.sqrt(x);
+                    break;
+                case 'transition':
+                    start = -0.1;
+                    end = 0.1;
+                    step = 0.005;
+                    func = (x) =>
+                        x <= 0
+                            ? 2 * Math.sin(x) - Math.cos(x)
+                            : Math.log(x + 0.1) * Math.sqrt(x + 0.1);
+                    break;
+            }
+
+            for (let x = start; x <= end; x += step) {
+                result.x.push(x);
+
+                const realValue = func(x);
+                // Немного отличающаяся заглушка для наглядности
+                const stubValue = realValue + 0.05 * Math.sin(10 * x);
+                const diff = Math.abs(realValue - stubValue);
+
+                result.real.push(realValue);
+                result.stub.push(stubValue);
+                result.difference.push(diff);
+            }
+
+            return result;
+        }
+
+        // Функция для генерации демо-графиков
+        function generateDemoPlots() {
+            createPlot(
+                generateDemoData('trig'),
+                'trig-plot',
+                'Тригонометрическая часть (x ≤ 0)',
+            );
+            createPlot(
+                generateDemoData('log'),
+                'log-plot',
+                'Логарифмическая часть (x > 0)',
+            );
+            createPlot(
+                generateDemoData('transition'),
+                'transition-plot',
+                'Область перехода между частями функции',
+            );
+        }
+    </script>
+</body>
+
+</html>
