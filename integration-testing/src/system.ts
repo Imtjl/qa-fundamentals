@@ -37,32 +37,3 @@ export function systemFunction(x: number, terms: number = 10): number {
 	}
 }
 
-/**
- * Export function values to a CSV file
- *
- * @param fileName - Output file name
- * @param startX - Start value for x
- * @param endX - End value for x
- * @param stepX - Step size for x
- */
-export function exportToCSV(
-	fileName: string,
-	startX: number,
-	endX: number,
-	stepX: number,
-): void {
-	const fs = require('fs');
-	let data = 'x,y\n';
-
-	for (let x = startX; x <= endX; x += stepX) {
-		const y = systemFunction(x);
-		if (!isNaN(y) && isFinite(y)) {
-			data += `${x},${y}\n`;
-		} else {
-			data += `${x},NaN\n`;
-		}
-	}
-
-	fs.writeFileSync(fileName, data);
-	console.log(`Data exported to ${fileName}`);
-}
