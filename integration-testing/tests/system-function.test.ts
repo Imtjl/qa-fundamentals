@@ -34,7 +34,7 @@ describe('System Function Integration Tests', () => {
 			const x = -0.5;
 
 			const result = systemFunction(x, 15);
-expect(math.taylorCsc).toHaveBeenCalledWith(x, 15);
+			expect(math.taylorCsc).toHaveBeenCalledWith(x, 15);
 			expect(math.taylorSec).toHaveBeenCalledWith(x, 15);
 			expect(math.taylorCos).toHaveBeenCalledWith(x, 15);
 
