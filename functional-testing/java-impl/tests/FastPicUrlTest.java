@@ -27,10 +27,10 @@ public class FastPicUrlTest {
     
     public static final int DEFAULT_TIMEOUT = 3;
     
-    public static final String JPG_IMAGE_PATH = "images/test.jpg";
-    public static final String PNG_IMAGE_PATH = "images/test.png";
-    public static final String GIF_IMAGE_PATH = "images/test.gif";
-    public static final String LARGE_IMAGE_PATH = "images/large.jpg";
+    public static final String JPG_IMAGE_PATH = "../../docs/test.jpg";
+    public static final String PNG_IMAGE_PATH = "../../docs/test.png";
+    public static final String GIF_IMAGE_PATH = "../../docs/test.gif";
+    public static final String LARGE_IMAGE_PATH = "../../docs/large.jpg";
     
     public static final String TEST_IMAGE_URL = "https://placekitten.com/800/600";
 
