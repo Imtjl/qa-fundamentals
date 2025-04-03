@@ -23,15 +23,28 @@ public class FastPicTest {
     public static WebDriver driver;
     
     public static final String BASE_URL = "https://fastpic.org";
-    
     public static final int DEFAULT_TIMEOUT = 3;
-    
-    public static final String JPG_IMAGE_PATH = "../../docs/test.jpg";
-    public static final String PNG_IMAGE_PATH = "../../docs/test.png";
-    public static final String GIF_IMAGE_PATH = "../../docs/test.gif";
-    public static final String LARGE_IMAGE_PATH = "../../docs/large.jpg";
-    
+
+    public static final String DOCS_BASE_PATH;
+    public static final String JPG_IMAGE_PATH;
+    public static final String PNG_IMAGE_PATH;
+    public static final String GIF_IMAGE_PATH;
+    public static final String LARGE_IMAGE_PATH;
+
     public static final String TEST_IMAGE_URL = "https://placekitten.com/800/600";
+
+    static {
+        DOCS_BASE_PATH = Paths.get("")
+            .toAbsolutePath()
+            .getParent() // up from java-impl 
+            .resolve("docs") // to docs directory
+            .toString();
+        
+        JPG_IMAGE_PATH = DOCS_BASE_PATH + "/test.jpg";
+        PNG_IMAGE_PATH = DOCS_BASE_PATH + "/test.png";
+        GIF_IMAGE_PATH = DOCS_BASE_PATH + "/test.gif";
+        LARGE_IMAGE_PATH = DOCS_BASE_PATH + "/large.jpg";
+    }
 
     @BeforeAll
     public static void setup() {
@@ -88,14 +101,12 @@ public class FastPicTest {
     public void testUploadJpgImage() {
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
 
-        String imagePath = Paths.get("images/test.jpg").toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(JPG_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@type='submit' and @id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(8))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
         assertTrue(picInfoDiv.isDisplayed(), "Информация об изображении должна отображаться");
         
         WebElement codesList = findByXPath("//ul[contains(@class, 'codes-list')]");
@@ -118,14 +129,12 @@ public class FastPicTest {
     public void testUploadLargeJpgImage() {
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
 
-        String imagePath = Paths.get("images/large.jpg").toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(LARGE_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@type='submit' and @id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(18))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
         assertTrue(picInfoDiv.isDisplayed(), "Информация об изображении должна отображаться");
         
         WebElement codesList = findByXPath("//ul[contains(@class, 'codes-list')]");
@@ -167,14 +176,12 @@ public class FastPicTest {
     public void testUploadPngImage() {
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
 
-        String imagePath = Paths.get(PNG_IMAGE_PATH).toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(PNG_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@type='submit' and @id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(8))
-                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
         assertTrue(picInfoDiv.isDisplayed(), "Информация об изображении должна отображаться");
 
         List<WebElement> linkInputs = driver.findElements(By.xpath("//ul[contains(@class, 'codes-list')]//input"));
@@ -198,14 +205,12 @@ public class FastPicTest {
         resizeInput.sendKeys("800");
 
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
-        String imagePath = Paths.get(JPG_IMAGE_PATH).toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(JPG_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(8))
-                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
         assertTrue(picInfoDiv.isDisplayed(), "Информация об изображении должна отображаться");
     }
 
@@ -217,15 +222,12 @@ public class FastPicTest {
     public void testMyUploadsPage() {
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
 
-        String imagePath = Paths.get("images/test.jpg").toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(JPG_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@type='submit' and @id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(8))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
-
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
 
         driver.get(BASE_URL + "/my.php");
 
@@ -249,19 +251,14 @@ public class FastPicTest {
     @Test
     @DisplayName("Проверка сгенерированных ссылок")
     public void testImageLinks() {
-        // Загружаем изображение
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
-        String imagePath = Paths.get(JPG_IMAGE_PATH).toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(JPG_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@id='uploadButton']");
         uploadButton.click();
 
-        // Ждем завершения загрузки и получения ссылок
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(8))
-                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
 
-        // Получаем все ссылки
         List<WebElement> linkInputs = driver.findElements(By.xpath("//ul[contains(@class, 'codes-list')]//input"));
         assertTrue(linkInputs.size() > 0, "Должна быть хотя бы одна ссылка на изображение");
 

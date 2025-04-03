@@ -80,8 +80,7 @@ public class FastPicUrlTest {
         WebElement uploadButton = findByXPath("//input[@id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(8))
-                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
         assertTrue(picInfoDiv.isDisplayed(), "Информация об изображении должна отображаться");
 
         List<WebElement> linkInputs = driver.findElements(By.xpath("//ul[contains(@class, 'codes-list')]//input"));

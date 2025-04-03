@@ -1,4 +1,3 @@
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -24,16 +23,28 @@ public class FastPicGifUploadTest {
     public static WebDriver driver;
     
     public static final String BASE_URL = "https://fastpic.org";
-    
     public static final int DEFAULT_TIMEOUT = 3;
-    
-    public static final String JPG_IMAGE_PATH = "../../docs/test.jpg";
-    public static final String PNG_IMAGE_PATH = "../../docs/test.png";
-    public static final String GIF_IMAGE_PATH = "../../docs/test.gif";
-    public static final String LARGE_IMAGE_PATH = "../../docs/large.jpg";
-    
+
+    public static final String DOCS_BASE_PATH;
+    public static final String JPG_IMAGE_PATH;
+    public static final String PNG_IMAGE_PATH;
+    public static final String GIF_IMAGE_PATH;
+    public static final String LARGE_IMAGE_PATH;
+
     public static final String TEST_IMAGE_URL = "https://placekitten.com/800/600";
 
+    static {
+        DOCS_BASE_PATH = Paths.get("")
+            .toAbsolutePath()
+            .getParent() // up from java-impl 
+            .resolve("docs") // to docs directory
+            .toString();
+        
+        JPG_IMAGE_PATH = DOCS_BASE_PATH + "/test.jpg";
+        PNG_IMAGE_PATH = DOCS_BASE_PATH + "/test.png";
+        GIF_IMAGE_PATH = DOCS_BASE_PATH + "/test.gif";
+        LARGE_IMAGE_PATH = DOCS_BASE_PATH + "/large.jpg";
+    }
     @BeforeAll
     public static void setup() {
         WebDriverManager.chromiumdriver().setup();
@@ -71,14 +82,12 @@ public class FastPicGifUploadTest {
     public void testUploadGifImage() {
         WebElement fileInput = findByXPath("//input[@type='file' and @id='file']");
 
-        String imagePath = Paths.get(GIF_IMAGE_PATH).toAbsolutePath().toString();
-        fileInput.sendKeys(imagePath);
+        fileInput.sendKeys(GIF_IMAGE_PATH);
 
         WebElement uploadButton = findByXPath("//input[@type='submit' and @id='uploadButton']");
         uploadButton.click();
 
-        WebElement picInfoDiv = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@class, 'picinfo')]")));
+        WebElement picInfoDiv = findByXPath("//div[contains(@class, 'picinfo')]");
         assertTrue(picInfoDiv.isDisplayed(), "Информация об изображении должна отображаться");
 
         List<WebElement> linkInputs = driver.findElements(By.xpath("//ul[contains(@class, 'codes-list')]//input"));
