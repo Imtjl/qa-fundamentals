@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.DisplayName
 
-class FastPicTest : BaseBrowserTest() {
+class FastPicMainPageTest : BaseBrowserTest() {
     override fun runTest() {
         var title = driver.title
         assertTrue(

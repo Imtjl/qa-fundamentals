@@ -1,10 +1,10 @@
 import io.github.bonigarcia.wdm.WebDriverManager
+import java.nio.file.Paths
 import java.time.Duration
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.*
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.edge.EdgeDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -25,10 +25,16 @@ abstract class BaseBrowserTest {
         const val BASE_URL = "https://fastpic.org"
         const val DEFAULT_TIMEOUT = 3
 
-        const val JPG_IMAGE_PATH = "../../docs/test.jpg"
-        const val PNG_IMAGE_PATH = "../../docs/test.png"
-        const val GIF_IMAGE_PATH = "../../docs/test.gif"
-        const val LARGE_IMAGE_PATH = "../../docs/large.jpg"
+        val DOCS_BASE_PATH =
+            Paths.get("")
+                .toAbsolutePath()
+                .parent // up from kotlin-impl
+                .resolve("docs") // to docs directory
+                .toString()
+        val JPG_IMAGE_PATH = "$DOCS_BASE_PATH/test.jpg"
+        val PNG_IMAGE_PATH = "$DOCS_BASE_PATH/test.png"
+        val GIF_IMAGE_PATH = "$DOCS_BASE_PATH/test.gif"
+        val LARGE_IMAGE_PATH = "$DOCS_BASE_PATH/large.jpg"
 
         const val TEST_IMAGE_URL = "https://placekitten.com/800/600"
     }
