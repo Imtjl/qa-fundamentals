@@ -1,5 +1,38 @@
 # Functional testing
 
+## Usage
+
+- Compile custom annotation
+
+```bash
+gradle test-annotations:build
+```
+
+- Run new cross-browser Java tests implementation:
+
+```bash
+gradle java-v2-impl:build --warning-mode all
+```
+
+> `output`:
+> > Task :java-v2-impl:test
+> FastPicTest > Проверка главной страницы > [1] EDGE PASSED
+> FastPicTest > Проверка вкладок (кроме Firefox) > [1] CHROME PASSED
+> FastPicTest > Проверка вкладок (кроме Firefox) > [2] EDGE PASSED
+> FastPicTest > Тест только в Chrome > [1] CHROME PASSED
+
+- Run Kotlin simple cross-browser concept tests implementation:
+
+```bash
+gradle kotlin-impl:test
+```
+
+- Run legacy Java tests implementation:
+
+```bash
+gradle java-v1-impl:test
+```
+
 ## Задание
 
 Сформировать варианты использования, разработать на их основе тестовое покрытие
