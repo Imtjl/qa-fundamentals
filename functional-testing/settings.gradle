@@ -1,4 +1,5 @@
 rootProject.name = 'functional-testing'
 include 'test-annotations'
-include 'java-impl'
+include 'java-v2-impl'
+include 'java-v1-impl'
 include 'kotlin-impl'
