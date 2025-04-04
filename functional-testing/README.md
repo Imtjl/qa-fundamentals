@@ -2,6 +2,8 @@
 
 ## Usage
 
+### Java/Kotlin
+
 - Compile custom annotation
 
 ```bash
@@ -31,6 +33,21 @@ gradle kotlin-impl:test
 
 ```bash
 gradle java-v1-impl:test
+```
+
+### Typescript
+
+- Go into `ts-impl` repo and install packages
+
+```bash
+cd ts-impl
+npm i
+```
+
+- Run tests
+
+```bash
+npm test
 ```
 
 ## Задание
